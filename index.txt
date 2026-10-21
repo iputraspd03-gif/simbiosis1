@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Lab Maya IPAS Kelas 6 SD - Ekosistem & Simbiosis Mutualisme</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --primary: #10b981;
+      --primary-dark: #047857;
+      --secondary: #0284c7;
+      --accent: #f59e0b;
+      --danger: #ef4444;
+      --bg-main: #064e3b;
+      --card-bg: #065f46;
+      --text: #f8fafc;
+      --text-muted: #a7f3d0;
+      --border: #047857;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #022c22;
+      color: var(--text);
+    }
+
+    /* Aspect Ratio Wrapper (16:9 Responsive Container) */
+    .app-container {
+      width: 100vw;
+      height: 100vh;
+      max-width: 177.78vh; /* 16:9 ratio guarantee */
+      max-height: 56.25vw;
+      margin: auto;
+      position: absolute;
+      top: 0; bottom: 0; left: 0; right: 0;
+      display: flex;
+      flex-direction: column;
+      background: #064e3b;
+      box-shadow: 0 0 30px rgba(0,0,0,0.8);
+    }
+
+    /* Sound Controls Floating */
+    .sound-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 100;
+      background: rgba(4, 120, 87, 0.8);
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+    }
+
+    /* Header & Navigation Tabs */
+    header {
+      background: #065f46;
+      border-bottom: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      height: 50px;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--accent);
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 6px;
+      height: 100%;
+      align-items: flex-end;
+    }
+
+    .tab-btn {
+      background: #047857;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      padding: 8px 14px;
+      border-radius: 8px 8px 0 0;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      background: #059669;
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* Main View Area */
+    main {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tab-content {
+      display: none;
+      width: 100%;
+      height: 100%;
+      padding: 16px;
+      overflow-y: auto;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Splash Screen */
+    #splash-screen {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #059669 0%, #022c22 100%);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .splash-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+
+    .splash-subtitle {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-bottom: 30px;
+    }
+
+    .loading-box {
+      width: 260px;
+      background: rgba(255,255,255,0.1);
+      height: 10px;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .loading-bar {
+      width: 0%;
+      height: 100%;
+      background: var(--accent);
+      transition: width 0.3s;
+    }
+
+    .start-btn {
+      background: var(--accent);
+      color: #022c22;
+      font-size: 1.2rem;
+      font-weight: 700;
+      padding: 12px 32px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(245, 158, 11, 0.4);
+      display: none;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    /* SIMULATION TAB LAYOUT */
+    #tab-simulasi {
+      padding: 10px;
+      display: none;
+      height: 100%;
+    }
+    #tab-simulasi.active {
+      display: flex;
+      gap: 10px;
+    }
+
+    .control-panel {
+      width: 320px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+    }
+
+    .sim-stage {
+      flex: 1;
+      background: #022c22;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .panel-section {
+      background: rgba(4, 120, 87, 0.4);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    .panel-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .btn-opt {
+      background: #047857;
+      color: var(--text);
+      border: 1px solid transparent;
+      padding: 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-opt.active {
+      background: var(--primary);
+      border-color: #a7f3d0;
+    }
+
+    .slider-group {
+      margin-top: 6px;
+    }
+
+    .slider-group label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      margin-bottom: 4px;
+    }
+
+    input[type=range] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    .action-toggle-btn {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .action-toggle-btn.off {
+      background: var(--danger);
+      color: white;
+    }
+
+    .action-toggle-btn.on {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* Meter Displays */
+    .meter-box {
+      display: flex;
+      justify-content: space-around;
+      background: #022c22;
+      border-radius: 6px;
+      padding: 8px;
+    }
+
+    .meter-val {
+      text-align: center;
+    }
+
+    .meter-val div:first-child {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+    }
+
+    .meter-val div:last-child {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #34d399;
+    }
+
+    /* Simulation Canvas Items */
+    .organism-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      width: 80%;
+      height: 60%;
+      position: relative;
+    }
+
+    .organism {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.5s ease;
+    }
+
+    .organism-icon {
+      font-size: 4rem;
+      transition: transform 0.5s ease;
+    }
+
+    .organism-label {
+      margin-top: 8px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .benefit-tag {
+      margin-top: 4px;
+      font-size: 0.75rem;
+      background: rgba(0,0,0,0.5);
+      padding: 4px 8px;
+      border-radius: 4px;
+      color: #a7f3d0;
+      max-width: 140px;
+      text-align: center;
+    }
+
+    .interaction-arrow {
+      font-size: 2rem;
+      color: var(--accent);
+      opacity: 0.3;
+      transition: all 0.5s ease;
+    }
+
+    .interaction-arrow.active {
+      opacity: 1;
+      animation: pulse 1s infinite;
+    }
+
+    /* General Content Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .card h3 {
+      color: var(--accent);
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+    }
+
+    .card p, .card li {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: #ecfdf5;
+    }
+
+    /* LKPD Form Elements */
+    .quiz-item {
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .quiz-item label {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    select, input[type=text] {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 6px;
+      background: #022c22;
+      border: 1px solid var(--border);
+      color: white;
+      font-size: 0.85rem;
+    }
+
+    .action-btn {
+      background: var(--primary);
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    /* Developer Card */
+    .dev-profile {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .dev-avatar {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+    }
+
+    /* Reset Floating Button */
+    .btn-reset {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      border: 1px solid var(--danger);
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.75rem;
+    }
+
+    .btn-reset:hover {
+      background: var(--danger);
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sound Toggle -->
+    <button class="sound-btn" id="sound-toggle" title="Toggle Suara">
+      <i class="fa-solid fa-volume-high"></i>
+    </button>
+
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+      <div style="font-size: 3.5rem; color: var(--accent); margin-bottom: 10px;">
+        <i class="fa-solid fa-handshake"></i>
+      </div>
+      <h1 class="splash-title">LAB MAYA IPAS</h1>
+      <p class="splash-subtitle">Ekosistem & Simbiosis Mutualisme (Fase C Kelas 6 SD)</p>
+      
+      <div class="loading-box">
+        <div class="loading-bar" id="load-bar"></div>
+      </div>
+      <p id="load-text" style="font-size:0.8rem; color: var(--text-muted);">Memuat Simulasi Ekosistem...</p>
+
+      <button class="start-btn" id="start-btn" onclick="initApp()">
+        <i class="fa-solid fa-play"></i> Mulai Eksplorasi
+      </button>
+    </div>
+
+    <!-- Main Navigation Header -->
+    <header>
+      <div class="brand">
+        <i class="fa-solid fa-leaf"></i> LabMaya SD
+      </div>
+      <nav class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('simulasi')">
+          <i class="fa-solid fa-flask"></i> Simulasi
+        </button>
+        <button class="tab-btn" onclick="switchTab('teori')">
+          <i class="fa-solid fa-book"></i> Teori
+        </button>
+        <button class="tab-btn" onclick="switchTab('prosedur')">
+          <i class="fa-solid fa-list-check"></i> Prosedur
+        </button>
+        <button class="tab-btn" onclick="switchTab('lkpd')">
+          <i class="fa-solid fa-file-pen"></i> LKPD
+        </button>
+        <button class="tab-btn" onclick="switchTab('pengembang')">
+          <i class="fa-solid fa-user-graduate"></i> Pengembang
+        </button>
+      </nav>
+    </header>
+
+    <!-- App View Contents -->
+    <main>
+
+      <!-- TAB 1: SIMULASI -->
+      <div id="tab-simulasi" class="tab-content active">
+        <!-- Control Sidebar -->
+        <div class="control-panel">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.9rem; font-weight: 700;">PILIH PASANGAN</span>
+            <button class="btn-reset" onclick="resetSim()"><i class="fa-solid fa-rotate-right"></i> Reset</button>
+          </div>
+
+          <!-- Pilihan Pasangan Simbiosis -->
+          <div class="panel-section">
+            <div class="panel-title"><i class="fa-solid fa-bugs"></i> Pasangan Organisme</div>
+            <div class="grid-2">
+              <button class="btn-opt active" id="pair-bee" onclick="setPair('bee')">
+                🐝 Lebah & Bunga
+              </button>
+              <button class="btn-opt" id="pair-bird" onclick="setPair('bird')">
+                🦩 Jalak & Kerbau
+              </button>
+              <button class="btn-opt" id="pair-clown" onclick="setPair('clown')">
+                🐠 Badut & Anemon
+              </button>
+              <button class="btn-opt" id="pair-ant" onclick="setPair('ant')">
+                🐜 Semut & Kutu
+              </button>
+            </div>
+            
+            <!-- Parameter Intensitas Interaksi -->
+            <div class="slider-group">
+              <label><span>Frekuensi Interaksi</span>: <b id="param-val">50%</b></label>
+              <input type="range" id="param-slider" min="10" max="100" value="50" oninput="updateSim()">
+            </div>
+          </div>
+
+          <!-- Tombol Interaksi Interaktif -->
+          <button class="action-toggle-btn off" id="interact-btn" onclick="toggleInteraction()">
+            <i class="fa-solid fa-link"></i> HUBUNGKAN ORGANISME
+          </button>
+
+          <!-- Indikator Keuntungan -->
+          <div class="panel-section">
+            <div class="panel-title"><div class="panel-title"><i class="fa-solid fa-chart-line"></i> Indikator Keuntungan</div></div>
+            <div class="meter-box">
+              <div class="meter-val">
+                <div>ORGANISME A</div>
+                <div id="meter-a">+0%</div>
+              </div>
+              <div class="meter-val">
+                <div>ORGANISME B</div>
+                <div id="meter-b">+0%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Simulation Graphic Canvas -->
+        <div class="sim-stage">
+          <div class="organism-box">
+            <!-- Organisme A -->
+            <div class="organism" id="org-a">
+              <div class="organism-icon" id="icon-a">🐝</div>
+              <div class="organism-label" id="label-a">Lebah</div>
+              <div class="benefit-tag" id="benefit-a">Belum berinteraksi</div>
+            </div>
+
+            <!-- Arrow Indicator -->
+            <div class="interaction-arrow" id="arrow">
+              <i class="fa-solid fa-arrows-left-right"></i>
+            </div>
+
+            <!-- Organisme B -->
+            <div class="organism" id="org-b">
+              <div class="organism-icon" id="icon-b">🌸</div>
+              <div class="organism-label" id="label-b">Bunga Sepatu</div>
+              <div class="benefit-tag" id="benefit-b">Belum berinteraksi</div>
+            </div>
+          </div>
+
+          <div id="status-desc" style="position: absolute; bottom: 20px; padding: 10px 20px; background: rgba(0,0,0,0.6); border-radius: 20px; font-size: 0.85rem; color: #a7f3d0; text-align: center; max-width: 80%;">
+            Klik <b>HUBUNGKAN ORGANISME</b> untuk memulai interaksi simbiosis mutualisme!
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: TEORI -->
+      <div id="tab-teori" class="tab-content">
+        <div class="card">
+          <h3><i class="fa-solid fa-handshake"></i> 1. Pengertian Simbiosis Mutualisme</h3>
+          <p><b>Simbiosis Mutualisme</b> adalah hubungan ketergantungan antara dua jenis makhluk hidup yang saling menguntungkan satu sama lain. Dalam hubungan ini, tidak ada pihak yang dirugikan.</p>
+        </div>
+
+        <div class="card">
+          <h3><i class="fa-solid fa-tree"></i> 2. Contoh Simbiosis Mutualisme dalam Ekosistem</h3>
+          <ul style="margin-left: 20px; margin-top: 8px;">
+            <li><b>Lebah / Kupu-kupu & Bunga:</b> Lebah mendapatkan nektar (makanan) dari bunga, sedangkan bunga terbantu dalam proses penyerbukan serbuk sari.</li>
+            <li><b>Burung Jalak & Kerbau:</b> Burung jalak mendapatkan makanan berupa kutu di tubuh kerbau, sedangkan kerbau terbantu karena gatal akibat kutu berkurang.</li>
+            <li><b>Ikan Badut & Anemon Laut:</b> Ikan badut mendapat perlindungan dari predator di antara tentakel anemon, sedangkan anemon mendapat sisa makanan dan dibersihkan oleh ikan badut.</li>
+            <li><b>Semut Rangrang & Kutu Daun:</b> Semut melindungi kutu daun dari predator, sedangkan kutu daun mengeluarkan cairan embun madu yang disukai semut.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- TAB 3: PROSEDUR -->
+      <div id="tab-prosedur" class="tab-content">
+        <div class="card">
+          <h3><i class="fa-solid fa-list-ol"></i> Langkah Percobaan Lab Virtual</h3>
+          <ol style="margin-left: 20px; line-height: 1.8;">
+            <li>Pilih salah satu **Pasangan Organisme** pada panel sebelah kiri (misalnya Lebah & Bunga).</li>
+            <li>Geser **Slider Frekuensi Interaksi** untuk mengatur seberapa sering kedua makhluk hidup tersebut berinteraksi.</li>
+            <li>Klik tombol **HUBUNGKAN ORGANISME** untuk mengaktifkan interaksi simbiosis.</li>
+            <li>Amati perubahan pada **Indikator Keuntungan** serta animasi pergerakan organisme pada layar simulasi.</li>
+            <li>Baca penjelasan keuntungan yang didapatkan oleh masing-masing organisme pada bagian bawah layar simulasi.</li>
+            <li>Buka tab **LKPD** untuk menjawab pertanyaan dan menguji pemahamanmu.</li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- TAB 4: LKPD -->
+      <div id="tab-lkpd" class="tab-content">
+        <div class="card">
+          <h3><i class="fa-solid fa-pen-to-square"></i> Lembar Kerja Peserta Didik (LKPD) Digital</h3>
+          <p style="margin-bottom: 12px;">Jawablah pertanyaan berikut berdasarkan pengamatan simulasi interaktif!</p>
+          
+          <form id="lkpd-form" onsubmit="submitLKPD(event)">
+            <div class="quiz-item">
+              <label>1. Hubungan antara dua makhluk hidup yang saling MENGUNTUNGKAN dinamakan...</label>
+              <select id="q1" required>
+                <option value="">-- Pilih Jawaban --</option>
+                <option value="a">Simbiosis Parasitisme</option>
+                <option value="b">Simbiosis Mutualisme</option>
+                <option value="c">Simbiosis Komensalisme</option>
+              </select>
+            </div>
+
+            <div class="quiz-item">
+              <label>2. Keuntungan yang diperoleh bunga saat dihinggapi lebah adalah...</label>
+              <select id="q2" required>
+                <option value="">-- Pilih Jawaban --</option>
+                <option value="a">Mendapatkan nektar manis</option>
+                <option value="b">Terbantu dalam proses penyerbukan</option>
+                <option value="c">Batangnya menjadi semakin kuat</option>
+              </select>
+            </div>
+
+            <div class="quiz-item">
+              <label>3. Burung Jalak hinggap di punggung kerbau untuk memakan kutu. Keuntungan bagi kerbau adalah...</label>
+              <select id="q3" required>
+                <option value="">-- Pilih Jawaban --</option>
+                <option value="a">Tubuhnya bersih dari kutu dan rasa gatal berkurang</option>
+                <option value="b">Kulit kerbau menjadi lebih tebal</option>
+                <option value="c">Kerbau dapat terbang bersama burung</option>
+              </select>
+            </div>
+
+            <div class="quiz-item">
+              <label>4. Tuliskan Kesimpulanmu: Mengapa Simbiosis Mutualisme sangat penting bagi kelestarian ekosistem?</label>
+              <input type="text" id="q4" placeholder="Ketik kesimpulanmu di sini..." required>
+            </div>
+
+            <button type="submit" class="action-btn"><i class="fa-solid fa-paper-plane"></i> Periksa Jawaban & Simpan</button>
+          </form>
+
+          <div id="lkpd-result" style="display:none; margin-top:15px; padding:12px; background:#022c22; border-radius:8px; border:1px solid var(--primary);">
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 5: PENGEMBANG -->
+      <div id="tab-pengembang" class="tab-content">
+        <div class="card">
+          <div class="dev-profile">
+            <div class="dev-avatar">
+              <i class="fa-solid fa-chalkboard-user"></i>
+            </div>
+            <div>
+              <h2 style="font-size:1.2rem; color:var(--accent);">Guru Pengembang Media</h2>
+              <p>Guru Kelas 6 Sekolah Dasar</p>
+              <p style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">Pengembang Pembelajaran Digital Fase C IPAS</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3><i class="fa-solid fa-circle-info"></i> Informasi Media Lab Virtual</h3>
+          <p><b>Mata Pelajaran:</b> IPAS (Ilmu Pengetahuan Alam & Sosial)</p>
+          <p><b>Fase / Kelas:</b> Fase C / Kelas 6 SD</p>
+          <p><b>Materi:</b> Ekosistem & Simbiosis Mutualisme</p>
+          <p><b>Platform:</b> HTML5 Standalone (Offline Compatible & Responsive 16:9)</p>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    /* ================= SYSTEM STATE ================= */
+    let soundEnabled = true;
+    let audioCtx = null;
+
+    let simState = {
+      pair: 'bee', // 'bee', 'bird', 'clown', 'ant'
+      paramVal: 50,
+      isConnected: false
+    };
+
+    const pairData = {
+      bee: {
+        iconA: '🐝', labelA: 'Lebah', benefitAText: 'Mendapat Nektar (Makanan)',
+        iconB: '🌸', labelB: 'Bunga', benefitBText: 'Terbantu Penyerbukan',
+        desc: 'Lebah mengambil nektar bunga untuk dijadikan makanan, dan secara tidak sengaja membantu membawa serbuk sari untuk penyerbukan bunga.'
+      },
+      bird: {
+        iconA: '🦩', labelA: 'Burung Jalak', benefitAText: 'Mendapat Kutu (Makanan)',
+        iconB: '🐃', labelB: 'Kerbau', benefitBText: 'Bebas dari Kutu Gatal',
+        desc: 'Burung jalak mendapatkan makanan dengan memakan kutu di punggung kerbau, sementara kerbau merasa nyaman karena gatalnya berkurang.'
+      },
+      clown: {
+        iconA: '🐠', labelA: 'Ikan Badut', benefitAText: 'Mendapat Perlindungan',
+        iconB: '🪸', labelB: 'Anemon Laut', benefitBText: 'Dibersihkan dari Parasit',
+        desc: 'Ikan badut bersembunyi dari predator di tentakel anemon yang beracun, sementara ikan badut membersihkan parasit dari tubuh anemon.'
+      },
+      ant: {
+        iconA: '🐜', labelA: 'Semut Rangrang', benefitAText: 'Mendapat Embun Madu',
+        iconB: '🐛', labelB: 'Kutu Daun', benefitBText: 'Mendapat Perlindungan',
+        desc: 'Semut melindungi kutu daun dari pemangsa, dan sebagai imbalannya semut mendapatkan cairan embun madu manis yang dikeluarkan kutu daun.'
+      }
+    };
+
+    /* Web Audio API Synthesizer */
+    function playSound(type) {
+      if (!soundEnabled) return;
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        if (type === 'click') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.05);
+        } else if (type === 'connect') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.15);
+          gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.15);
+        } else if (type === 'win') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+          osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+          osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2);
+          gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.4);
+        }
+      } catch (e) { console.log("Audio not supported"); }
+    }
+
+    /* Loading Handler */
+    window.addEventListener('load', () => {
+      let bar = document.getElementById('load-bar');
+      let txt = document.getElementById('load-text');
+      let btn = document.getElementById('start-btn');
+      let progress = 0;
+
+      let timer = setInterval(() => {
+        progress += 20;
+        bar.style.width = progress + '%';
+        if (progress >= 100) {
+          clearInterval(timer);
+          txt.innerText = "Simulasi Siap!";
+          btn.style.display = 'inline-block';
+        }
+      }, 150);
+    });
+
+    function initApp() {
+      playSound('win');
+      document.getElementById('splash-screen').style.display = 'none';
+      updateSim();
+    }
+
+    /* Sound Button Toggle */
+    document.getElementById('sound-toggle').addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      const icon = document.getElementById('sound-toggle').querySelector('i');
+      if (soundEnabled) {
+        icon.className = 'fa-solid fa-volume-high';
+      } else {
+        icon.className = 'fa-solid fa-volume-xmark';
+      }
+    });
+
+    /* Tab Switching Logic */
+    function switchTab(tabId) {
+      playSound('click');
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+      event.currentTarget.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+    }
+
+    /* Simulation Control Setters */
+    function setPair(pairKey) {
+      playSound('click');
+      simState.pair = pairKey;
+      document.querySelectorAll('#pair-bee, #pair-bird, #pair-clown, #pair-ant').forEach(b => b.classList.remove('active'));
+      document.getElementById('pair-' + pairKey).classList.add('active');
+      updateSim();
+    }
+
+    function toggleInteraction() {
+      simState.isConnected = !simState.isConnected;
+      playSound('connect');
+      const btn = document.getElementById('interact-btn');
+
+      if (simState.isConnected) {
+        btn.className = 'action-toggle-btn on';
+        btn.innerHTML = '<i class="fa-solid fa-unlink"></i> LEPAS INTERAKSI';
+      } else {
+        btn.className = 'action-toggle-btn off';
+        btn.innerHTML = '<i class="fa-solid fa-link"></i> HUBUNGKAN ORGANISME';
+      }
+      updateSim();
+    }
+
+    function resetSim() {
+      playSound('click');
+      simState.isConnected = false;
+      simState.paramVal = 50;
+      document.getElementById('param-slider').value = 50;
+      const btn = document.getElementById('interact-btn');
+      btn.className = 'action-toggle-btn off';
+      btn.innerHTML = '<i class="fa-solid fa-link"></i> HUBUNGKAN ORGANISME';
+      setPair('bee');
+    }
+
+    /* Update Simulation Graphics & Logic */
+    function updateSim() {
+      const sliderVal = document.getElementById('param-slider').value;
+      simState.paramVal = sliderVal;
+      document.getElementById('param-val').innerText = sliderVal + '%';
+
+      const data = pairData[simState.pair];
+
+      // Update Icons and Labels
+      document.getElementById('icon-a').innerText = data.iconA;
+      document.getElementById('label-a').innerText = data.labelA;
+      document.getElementById('icon-b').innerText = data.iconB;
+      document.getElementById('label-b').innerText = data.labelB;
+
+      const arrow = document.getElementById('arrow');
+      const orgAIcon = document.getElementById('icon-a');
+      const orgBIcon = document.getElementById('icon-b');
+      const desc = document.getElementById('status-desc');
+
+      if (simState.isConnected) {
+        arrow.classList.add('active');
+        document.getElementById('benefit-a').innerText = data.benefitAText;
+        document.getElementById('benefit-b').innerText = data.benefitBText;
+
+        // Animated movement towards center based on slider value
+        const shiftX = (sliderVal / 100) * 30;
+        orgAIcon.style.transform = `translateX(${shiftX}px) scale(1.1)`;
+        orgBIcon.style.transform = `translateX(-${shiftX}px) scale(1.1)`;
+
+        // Calculate Meters Output
+        document.getElementById('meter-a').innerText = `+${sliderVal}%`;
+        document.getElementById('meter-b').innerText = `+${sliderVal}%`;
+
+        desc.innerHTML = `<b>Simbiosis Mutualisme Aktif:</b> ${data.desc}`;
+        desc.style.color = '#a7f3d0';
+      } else {
+        arrow.classList.remove('active');
+        document.getElementById('benefit-a').innerText = 'Belum berinteraksi';
+        document.getElementById('benefit-b').innerText = 'Belum berinteraksi';
+
+        orgAIcon.style.transform = 'translateX(0) scale(1)';
+        orgBIcon.style.transform = 'translateX(0) scale(1)';
+
+        document.getElementById('meter-a').innerText = '+0%';
+        document.getElementById('meter-b').innerText = '+0%';
+
+        desc.innerHTML = 'Klik <b>HUBUNGKAN ORGANISME</b> untuk memulai interaksi simbiosis mutualisme!';
+        desc.style.color = '#94a3b8';
+      }
+    }
+
+    /* LKPD Form Evaluation */
+    function submitLKPD(e) {
+      e.preventDefault();
+      playSound('win');
+
+      const q1 = document.getElementById('q1').value;
+      const q2 = document.getElementById('q2').value;
+      const q3 = document.getElementById('q3').value;
+      const q4 = document.getElementById('q4').value;
+
+      let score = 0;
+      if (q1 === 'b') score += 30;
+      if (q2 === 'b') score += 30;
+      if (q3 === 'a') score += 30;
+      if (q4.trim().length > 3) score += 10;
+
+      const resDiv = document.getElementById('lkpd-result');
+      resDiv.style.display = 'block';
+      resDiv.innerHTML = `
+        <h4 style="color:var(--accent);"><i class="fa-solid fa-circle-check"></i> LKPD Berhasil Dikirim!</h4>
+        <p style="margin-top:6px;">Skor Kamu: <b>${score} / 100</b></p>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">Catatan Guru: Hebat! Kamu sudah memahami konsep hubungan saling menguntungkan (Simbiosis Mutualisme) antar makhluk hidup dalam ekosistem.</p>
+      `;
+    }
+  </script>
+</body>
+</html>
